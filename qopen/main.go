@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"utilities/qopen/file_share"
 	"utilities/qopen/list"
 	"utilities/qopen/open"
 )
@@ -26,6 +27,8 @@ func main() {
 		open.QuickOpen(args[1:]...)
 	case "list":
 		list.ShowProjects(args[1:]...)
+	case "share":
+		file_share.Share(args...)
 	default:
 		help()
 	}
