@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 /*
@@ -33,9 +34,12 @@ func init() {
 }
 
 func readProjectDirs() error {
-	dir, _ := os.Getwd()
+	exePath, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
 	// 读取文件内容
-	content, err := os.ReadFile(path.Join(dir, "/conf/config.yaml"))
+	content, err := os.ReadFile(path.Join(filepath.Dir(exePath), "/conf/config.yaml"))
 	if err != nil {
 		return err
 	}
