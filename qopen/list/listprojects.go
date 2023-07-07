@@ -30,7 +30,7 @@ func ShowProjects(args ...string) {
 	}
 }
 func help() {
-	fmt.Println("qopen l helps to list all the projects ")
+	fmt.Println("qopen list helps to list all the projects ")
 	fmt.Println("")
 	fmt.Println("Select the project witch you want to open")
 	for editor, projects := range core.Editors {

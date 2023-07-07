@@ -22,9 +22,9 @@ func main() {
 		help()
 	}
 	switch args[0] {
-	case "o":
+	case "open":
 		open.QuickOpen(args[1:]...)
-	case "l":
+	case "list":
 		list.ShowProjects(args[1:]...)
 	default:
 		help()
@@ -40,7 +40,7 @@ func help() {
 	fmt.Println("")
 	fmt.Println("The command are:")
 	fmt.Println("")
-	fmt.Println("          o [project]	open project")
-	fmt.Println("          l    list projects")
+	fmt.Println("          open [project]	open project")
+	fmt.Println("          list    list projects")
 	os.Exit(0)
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strconv"
 	"strings"
 	"utilities/qopen/core"
 )
@@ -27,14 +28,20 @@ func QuickOpen(args ...string) {
 	)
 	matches := make(map[string]string)
 	// 可能有多个匹配的项目，如果有多个，需要返回让用户重新选择
+Label1:
 	for _, projects := range core.Editors {
 		for project, editor := range projects {
+			if path.Base(project) == projectName {
+				matches = map[string]string{project: editor}
+				break Label1
+			}
 			if strings.Contains(path.Base(project), projectName) {
 				matches[project] = editor
 			}
 		}
 	}
 	if len(matches) == 0 {
+		fmt.Printf("%s match nothing\n", projectName)
 		help()
 	}
 	if !matchMany(matches) {
@@ -53,16 +60,21 @@ func matchMany(projects map[string]string) bool {
 		return false
 	}
 	fmt.Println("to many matches:")
+	mapping := make(map[string]string, len(projects))
+	index := 1
 	for p, _ := range projects {
-		fmt.Println("              " + p)
+		fmt.Println("              index     	project")
+		fmt.Printf("              %d    		%s\n", index, p)
+		index += 1
+		mapping[strconv.Itoa(index)] = p
 	}
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("请输入完整项目地址：")
-	addr, _ := reader.ReadString('\n')
-	addr = strings.TrimSpace(addr)
+	fmt.Println("请选择需要打开的项目索引：")
+	indexStr, _ := reader.ReadString('\n')
+	indexStr = strings.TrimSpace(indexStr)
 
-	err := exec.Command(projects[addr], addr).Run()
+	err := exec.Command(projects[mapping[indexStr]], mapping[indexStr]).Run()
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +83,7 @@ func matchMany(projects map[string]string) bool {
 }
 
 func help() {
-	fmt.Println("qopen o helps to open the projects ")
+	fmt.Println("qopen open helps to open the projects ")
 	fmt.Println("")
 	fmt.Println("Select the project witch you want to open")
 	for editor, projects := range core.Editors {
