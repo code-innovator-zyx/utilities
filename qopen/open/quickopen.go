@@ -61,7 +61,7 @@ func matchMany(projects map[string]string) bool {
 	}
 	fmt.Println("to many matches:")
 	mapping := make(map[string]string, len(projects))
-	index := 1
+	index := 0
 	for p, _ := range projects {
 		fmt.Println("              index     	project")
 		fmt.Printf("              %d    		%s\n", index, p)
