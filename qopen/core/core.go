@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
-	"path/filepath"
+	"path"
 )
 
 /*
@@ -33,14 +33,9 @@ func init() {
 }
 
 func readProjectDirs() error {
-	// 获取配置文件的相对路径
-	filePath, err := filepath.Abs("/Users/zouyuxi/workspace/utilities/qopen/config.yaml")
-	if err != nil {
-		return err
-	}
-
+	dir, _ := os.Getwd()
 	// 读取文件内容
-	content, err := os.ReadFile(filePath)
+	content, err := os.ReadFile(path.Join(dir, "/conf/config.yaml"))
 	if err != nil {
 		return err
 	}
