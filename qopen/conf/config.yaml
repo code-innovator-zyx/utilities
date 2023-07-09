@@ -1,3 +1,13 @@
-charm: /Users/zouyuxi/PycharmProjects
-idea: /Users/zouyuxi/java_workspace
-goland: /Users/zouyuxi/workspace
+#charm: /Users/zouyuxi/PycharmProjects
+#idea:
+#goland:
+
+# 工作目录列表
+workspaces:
+  - /Users/zouyuxi/PycharmProjects
+  - /Users/zouyuxi/java_workspace
+  - /Users/zouyuxi/workspace
+
+
+# 默认打开的编辑器 如果IDEA全家桶编辑器不存在，使用默认编辑器
+default_editor: goland

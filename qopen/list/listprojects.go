@@ -18,12 +18,12 @@ func ShowProjects(args ...string) {
 	if len(args) == 0 {
 		help()
 	}
-	// 指定编辑器
-	for editor, projects := range core.Editors {
-		if editor != args[0] {
+	// 指定语言
+	for language, projects := range core.Editors {
+		if language != args[0] {
 			continue
 		}
-		fmt.Printf("Editor %s:\n", editor)
+		fmt.Printf("Language %s:\n", language)
 		for name, _ := range projects {
 			fmt.Println("              " + name)
 		}
@@ -32,9 +32,10 @@ func ShowProjects(args ...string) {
 func help() {
 	fmt.Println("qopen list helps to list all the projects ")
 	fmt.Println("")
-	fmt.Println("Select the project witch you want to open")
-	for editor, projects := range core.Editors {
-		fmt.Printf("Editor %s:\n", editor)
+	fmt.Println("Current projects list")
+	fmt.Println(core.Editors)
+	for language, projects := range core.Editors {
+		fmt.Printf("Language %s:\n", language)
 		for name, _ := range projects {
 			fmt.Println("              " + name)
 		}

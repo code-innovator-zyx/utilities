@@ -21,19 +21,20 @@ type Dir[T string | struct{}] map[string]T
 
 // Editors 初始化工作目录,获取目录下的项目列表
 var (
-	Editors       map[string]Dir[string]
-	ProjectEditor Dir[string]
+	Editors map[string]Dir[string]
 )
 
 func init() {
-	err := readProjectDirs()
-	if nil != err {
-		fmt.Println(err.Error())
-		os.Exit(0)
-	}
+	Editors = make(map[string]Dir[string])
+	readProjectDirs()
 }
 
-func readProjectDirs() error {
+type Config struct {
+	WorkSpaces    []string `json:"workspaces"`
+	DefaultEditor string   `json:"default_editor"`
+}
+
+func readProjectDirs() {
 	exePath, err := os.Executable()
 	if err != nil {
 		panic(err)
@@ -41,23 +42,54 @@ func readProjectDirs() error {
 	// 读取文件内容
 	content, err := os.ReadFile(path.Join(filepath.Dir(exePath), "/conf/config.yaml"))
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	// 将文件内容解析为 map[string]interface{} 类型
-	var config map[string]string
+	var config Config
 	err = yaml.Unmarshal(content, &config)
 	if err != nil {
-		return err
+		panic(err)
 	}
-	Editors = make(map[string]Dir[string])
+	for _, workspace := range config.WorkSpaces {
+		// 读取目录下最多三级的项目列表
+		pickProject(workspace, 1)
+	}
+}
 
-	for tool, ds := range config {
-		projects := Dir[string]{}
-		findProject(projects, tool, ds, 1)
-		Editors[tool] = projects
+// 递归获取项目列表
+func pickProject(dir string, deep int) {
+	if deep >= 3 {
+		return
 	}
-	return nil
+	readDir, err := os.ReadDir(dir)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(0)
+	}
+	for _, de := range readDir {
+		if !de.IsDir() {
+			continue
+		}
+		for _, character := range projectCharacters {
+			targetFile := fmt.Sprintf("%s/%s/%s", dir, de.Name(), character)
+			if _, err := os.Stat(targetFile); nil == err {
+				projectDir := fmt.Sprintf("%s/%s", dir, de.Name())
+				// 获取项目编辑器和对应语言
+				editor, language := getEditorAndLanguageFromDir(projectDir)
+				if projects, ok := Editors[language]; ok {
+					projects[projectDir] = editor
+					break
+				}
+				Editors[language] = Dir[string]{
+					projectDir: editor,
+				}
+				break
+			}
+		}
+		tmp := fmt.Sprintf("%s/%s", dir, de.Name())
+		pickProject(tmp, deep+1)
+	}
 }
 
 // 递归获取项目列表
